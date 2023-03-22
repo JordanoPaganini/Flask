@@ -9,11 +9,12 @@ from flask_migrate import Migrate
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://eventos_admin:eventos_admin15*@db4free.net/eventos_mpa'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'Dp7Tz8XmaNtJjKtFwZt7yzk8dJg3qED2KjzVKI70GflX95UbMcZjWukx8cd1R06C'
+
 
 db = SQLAlchemy(app)
 
 auth = Blueprint('auth', __name__)
-
 app.register_blueprint(auth, url_prefix='/auth')
 
 login_manager = LoginManager()
@@ -37,17 +38,14 @@ def load_user(user_id):
  return User.query.get(int(user_id))
 
 
-@app.route('/login', methods= ['POST'])
+@app.route('/auth/login', methods=['GET', 'POST'])
 def login():
-    print('OI' * 50)
     user = User.query.filter_by(email=request.form['username']).first()
     if user is not None and user.verify_password(request.form['password']):
         login_user(user.id)
-        if next is None or not next.startswith('/'):
-            next = url_for('main.index')
-        return redirect('/index.html')
+        return redirect('/oi')
     flash('Invalid username or password.')
-    return render_template('index.html')
+    return redirect("/index.html")
 
 # Models
 
